@@ -1,14 +1,12 @@
 from time import perf_counter
 from multiprocessing import cpu_count
+from app.facade import create_people_facade
 from app.infra.db.postgresql.database.challenge import PersonRepository
 from app.usecases import DbCreatePerson
 from app.infra.native.multiprocessing import MultiProcessManager
 from app.infra.native.threads import MultiThreadManager
 
 from app.util import generate_people_random_data
-
-def multiprocessing_worker_method(batch):
-  DbCreatePerson(PersonRepository().batch_insert).create_many(batch)
 
 def main():
     num_records = 1000000
@@ -22,7 +20,7 @@ def main():
 
     multi_process_manager = MultiProcessManager(cpu_count(), 100_000)
 
-    multi_process_manager.exec_in_batches(total_records, multiprocessing_worker_method)
+    multi_process_manager.exec_in_batches(total_records, create_people_facade)
 
     end_time = perf_counter()
     execution_time = end_time - start_time
