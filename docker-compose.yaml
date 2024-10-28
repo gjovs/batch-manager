@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  app:
+    build: .
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: myuser
+      DB_PASSWORD: mypassword
+      DB_NAME: mydatabase
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+volumes:
+  pgdata:
+
+networks:
+  app-network:
